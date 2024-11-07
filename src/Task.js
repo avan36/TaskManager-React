@@ -4,7 +4,7 @@ export const Task = (props) => {
     return (
       <div className={`task ${props.completed ? "completed" : ""}`}>
         <div>
-          <h1>{props.taskName}</h1>
+          <h3>{props.taskName}</h3>
           {props.dueDate && (
             <p style={{ color: isOverdue ? "red" : "#888" }}>
               Due: {new Date(props.dueDate).toLocaleDateString()}
