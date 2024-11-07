@@ -92,8 +92,11 @@ function App() {
             />
           ))}
         </div>
+        
       </div>
+      <p><a href = "https://github.com/avan36/TaskManager-React">Link to GitHub</a></p>
     </div>
+    
   );
 }
 
