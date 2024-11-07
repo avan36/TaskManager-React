@@ -2,62 +2,95 @@ import styles from './App.css';
 import { useState } from 'react';
 import { Task } from "./Task";
 
-
 function App() {
-
   const [todoList, setTodoList] = useState([]);
   const [newTask, setNewTask] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleChange = (event) => {
-    setNewTask(event.target.value); //takes in event and sets the new task as the event.target.value
+    setNewTask(event.target.value);
+  };
+
+  const handleDateChange = (event) => {
+    setDueDate(event.target.value);
+  };
+
+  const toggleDatePicker = () => {
+    setShowDatePicker((prev) => !prev);
+    setDueDate(""); // Reset date if they toggle it off
   };
 
   const addTask = () => {
+    if (newTask.trim() === "") return; // Prevent empty task submission
+
     const task = {
-      id: todoList.length === 0 ? 1 : todoList[todoList.length - 1].id + 1, //We want the id to increment by 1
+      id: todoList.length === 0 ? 1 : todoList[todoList.length - 1].id + 1,
       taskName: newTask,
+      dueDate: dueDate,
       completed: false
-    }
-    
+    };
+
     setTodoList([...todoList, task]);
-  }
+    setNewTask("");
+    setDueDate("");
+  };
 
   const deleteTask = (id) => {
-    const newTodoList = todoList.filter((task) => {
-      return task.id != id
-    });
+    const newTodoList = todoList.filter((task) => task.id !== id);
     setTodoList(newTodoList);
   };
 
   const completeTask = (id) => {
-    setTodoList (
-      todoList.map((task) => {
-        if (task.id == id) {
-          if (task.completed) {
-            return {... task, completed: false}
-          }
-          else {
-            return {... task, completed: true}
-          }
-        } else {
-          return task;
-        }
-      })
-
+    setTodoList(
+      todoList.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
     );
   };
 
-  return (<div className='App'>
-    <div className = 'addTask'>
-      <input onChange={handleChange}/>
-      <button onClick={addTask}>Add task</button>
-    </div>
+  return (
+    <div className='App'>
+      <div className='addTask'>
+        <input 
+          type="text" 
+          placeholder="Enter a new task..." 
+          value={newTask}
+          onChange={handleChange} 
+        />
+        
+        <button onClick={toggleDatePicker}>
+          {showDatePicker ? "Hide due date" : "Show a due date?"}
+        </button>
+        
+        {showDatePicker && (
+          <input 
+            type="date" 
+            value={dueDate}
+            onChange={handleDateChange} 
+          />
+        )}
 
-    <div className= 'list'></div>
-    {todoList.map((current_task) =>  {
-      return (<Task taskName = {current_task.taskName} id = {current_task.id} completed = {current_task.completed} deleteTask = {deleteTask} completeTask = {completeTask}/> );
-    })}
+        <button onClick={addTask} disabled={!newTask.trim()}>
+          Add task
+        </button>
+      </div>
+
+      <div className='list'>
+        {todoList.map((current_task) => (
+          <Task
+            key={current_task.id}
+            taskName={current_task.taskName}
+            dueDate={current_task.dueDate}
+            id={current_task.id}
+            completed={current_task.completed}
+            deleteTask={deleteTask}
+            completeTask={completeTask}
+          />
+        ))}
+      </div>
     </div>
   );
 }
+
 export default App;
